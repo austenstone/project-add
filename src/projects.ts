@@ -7,7 +7,7 @@ const run = async (): Promise<void> => {
   if (!github.context) return core.setFailed('No GitHub context.');
   if (!github.context.payload) return core.setFailed('No payload. Make sure this is an issue event.');
   if (!github.context.payload.issue) return core.setFailed('No issue found in the payload. Make sure this is an issue event.');
-  const token = core.getInput('token');
+  const token = core.getInput('github-token');
   const projectNumber = parseInt(core.getInput('project_number'));
   const owner = core.getInput('owner ') || github.context.repo.owner;
   const octokit: ClientType = github.getOctokit(token);
