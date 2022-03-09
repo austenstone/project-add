@@ -1,7 +1,7 @@
 {
-  "name": "project-add-issue",
+  "name": "project-add",
   "version": "1.0.0",
-  "description": "Add an issue to a project",
+  "description": "Add an issue or pull request to a project",
   "main": "index.js",
   "scripts": {
     "build": "tsc && npm run package",
@@ -24,7 +24,7 @@
   "readme": "README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/austenstone/project-add-issue.git"
+    "url": "https://github.com/austenstone/project-add.git"
   },
   "license": "ISC",
   "dependencies": {
