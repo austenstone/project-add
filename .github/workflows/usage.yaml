@@ -1,7 +1,7 @@
 name: "OpenAI Issue Labeler"
 on:
   issues:
-    types: [opened, edited]
+    types: [opened]
 
 jobs:
   add_issue_to_project:
@@ -11,4 +11,4 @@ jobs:
       - uses: ./
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-          openai-api-key: "${{ secrets.OPENAI_API_KEY }}"
+          project_number: 1234
