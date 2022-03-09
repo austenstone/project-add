@@ -7,14 +7,16 @@ const run = async (): Promise<void> => {
   if (!github.context) return core.setFailed('No GitHub context.');
   if (!github.context.payload) return core.setFailed('No payload. Make sure this is an issue event.');
   if (!github.context.payload.issue) return core.setFailed('No issue found in the payload. Make sure this is an issue event.');
-  const token = core.getInput('github-token');
+  const token = core.getInput('github-token') || process.env.GITHUB_TOKEN;
   const projectNumber = parseInt(core.getInput('project_number'));
   const owner = core.getInput('owner ') || github.context.repo.owner;
-  const octokit: ClientType = github.getOctokit(token);
   const issue = github.context.payload.issue;
 
+  if (!token) return core.setFailed('No input \'token\'');
   if (!projectNumber) return core.setFailed('No input \'projectNumber\'');
   if (!issue) return core.setFailed('No issue in event context');
+
+  const octokit: ClientType = github.getOctokit(token);
 
   core.startGroup(`GraphQL get project number \u001b[1m${projectNumber}\u001B[m`);
   const headers = { 'GraphQL-Features': 'projects_next_graphql', }
