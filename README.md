@@ -66,3 +66,6 @@ Once support is added you we can utilize [Assigning permissions to jobs](https:/
 permissions:
   repository-projects: write
 ```
+## References
+- [Automating projects (beta)](https://docs.github.com/en/enterprise-cloud@latest/issues/trying-out-the-new-projects-experience/automating-projects)
+- [Example workflow authenticating with a GitHub App](https://docs.github.com/en/enterprise-cloud@latest/issues/trying-out-the-new-projects-experience/automating-projects#example-workflow-authenticating-with-a-github-app)
