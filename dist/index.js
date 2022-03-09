@@ -57,7 +57,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
     if (!github.context)
         return core.setFailed('No GitHub context.');
     if (!github.context.payload)
-        return core.setFailed('No payload. Make sure this is an issue event.');
+        return core.setFailed('No event. Make sure this is an issue or pr event.');
     const token = core.getInput('github-token') || process.env.GITHUB_TOKEN;
     const projectNumber = parseInt(core.getInput('project-number'));
     const organization = core.getInput('organization') || github.context.repo.owner;
