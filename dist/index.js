@@ -65,6 +65,8 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
     const organization = core.getInput('organization') || github.context.repo.owner;
     const user = core.getInput('user');
     const issue = github.context.payload.issue;
+    console.log(github);
+    console.log(github.context);
     if (!token)
         return core.setFailed('No input \'token\'');
     if (!projectNumber)
