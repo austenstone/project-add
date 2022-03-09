@@ -1,4 +1,4 @@
-name: "OpenAI Issue Labeler"
+name: "Add Issue to Project"
 on:
   issues:
     types: [opened]

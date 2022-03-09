@@ -13,7 +13,7 @@ If your project is part of an organization that has SAML enabled, see [Authorizi
 
 #### Default Workflow
 ```yml
-name: "Issue to project"
+name: "Add Issue to Project"
 on:
   issues:
     types: [opened]
@@ -29,8 +29,7 @@ jobs:
 ```
 
 ## Input Settings
-Various inputs are defined in [`action.yml`](action.yml) to let you configure the labeler:
-See the [Classifications API reference](https://beta.openai.com/docs/api-reference/classifications) for more information.
+Various inputs are defined in [`action.yml`](action.yml):
 
 | Name | Description | Default |
 | --- | - | - |
