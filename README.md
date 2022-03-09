@@ -29,5 +29,5 @@ See the [Classifications API reference](https://beta.openai.com/docs/api-referen
 | Name | Description | Default |
 | --- | - | - |
 | **token** | Token to use to authorize label changes. Typically the GITHUB_TOKEN secret | N/A |
-| **project_next_number** | The project number. Get this from the URL. | N/A |
+| **project_number** | The project number. Get this from the URL. | N/A |
 | owner | The owner of the project board. | _the repository owner_
