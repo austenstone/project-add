@@ -64,4 +64,4 @@ Various inputs are defined in [`action.yml`](action.yml):
 | organization | The organization that owns of the project. | _the repository owner_
 | user | The user that owns of the project. | N/A
 
-If you are using a user owned project board you must provide the `user` input.
+If you are using a user owned project board you must provide the `user` input `${{ github.repository_owner }}` is fine if you're the owner of the repository.
