@@ -5,6 +5,7 @@ on:
 
 jobs:
   add_issue_to_project:
+    name: Add Issue to Project
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
