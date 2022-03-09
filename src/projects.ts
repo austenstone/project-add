@@ -50,22 +50,24 @@ const run = async (): Promise<void> => {
     }`
   }
   const headers = { 'GraphQL-Features': 'projects_next_graphql', }
-  const projectNext: any = await octokit.graphql(projectQuery)
-  core.info(JSON.stringify(projectNext, null, 2))
+  const projectNextResponse: any = await octokit.graphql(projectQuery)
+  core.info(JSON.stringify(projectNextResponse, null, 2))
   core.endGroup()
 
-  if (!projectNext?.organization?.projectNext?.id) {
+  const projectNext = projectNextResponse?.organization?.projectNext || projectNextResponse?.user?.projectNext;
+
+  if (!projectNext?.id) {
     core.setFailed(`Project number \u001b[1m${projectNumber}\u001B[m not found for login \u001b[1m${organization || user}\u001B[m.
 Check the number of the project and that it is owned by \u001b[1m${organization || user}\u001B[m.
 EX: \u001b[1mhttps://github.com/orgs/github/projects/5380\u001B[m has the number \u001b[1m5380\u001B[m.`)
     return
   }
 
-  core.startGroup(`GraphQL add issue \u001b[1m${issue.title}\u001B[m to project \u001b[1m${projectNext.organization.projectNext.title}\u001B[m`);
+  core.startGroup(`GraphQL add issue \u001b[1m${issue.title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m`);
   const result: any = await octokit.graphql({
     query: `mutation {
       addProjectNextItem(
-        input: { contentId: "${issue.node_id}", projectId: "${projectNext.organization.projectNext.id}" }
+        input: { contentId: "${issue.node_id}", projectId: "${projectNext.id}" }
       ) {
         projectNextItem {
           id
@@ -78,11 +80,11 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/5380\u001B[m has the number
   core.endGroup()
 
   if (!result?.addProjectNextItem?.projectNextItem?.id) {
-    core.setFailed(`Failed to add issue to project '${projectNext.organization.projectNext.title}'.`)
+    core.setFailed(`Failed to add issue to project '${projectNext.title}'.`)
     return
   }
 
-  core.info(`✅ Successfully added issue \u001b[1m${issue.title}\u001B[m to project \u001b[1m${projectNext.organization.projectNext.title}\u001B[m.
+  core.info(`✅ Successfully added issue \u001b[1m${issue.title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m.
 https://github.com/orgs/github/projects/${projectNumber}`);
 };
 
