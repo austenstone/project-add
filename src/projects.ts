@@ -13,7 +13,6 @@ const run = async (): Promise<void> => {
   const octokit: ClientType = github.getOctokit(token);
   const issue = github.context.payload.issue;
 
-  if (!token) return core.setFailed('No input \'token\'');
   if (!projectNumber) return core.setFailed('No input \'projectNumber\'');
   if (!issue) return core.setFailed('No issue in event context');
 
@@ -57,7 +56,7 @@ const run = async (): Promise<void> => {
     core.setFailed(`Failed to add issue to project '${projectNext.organization.projectNext.title}'.`)
     return
   }
-  
+
   core.info(`✅ Successfully added issue \u001b[1m${issue.title}\u001B[m to project \u001b[1m${projectNext.organization.projectNext.title}\u001B[m.
   https://github.com/orgs/github/projects/${projectNumber}`);
 };
