@@ -5,6 +5,8 @@ This GitHub [action](https://docs.github.com/en/actions) adds issues to the [Pro
 ## Usage
 Create a workflow (eg: `.github/workflows/on-issue-open.yml`). See [Creating a Workflow file](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file).
 
+You will need a project number. For example `https://github.com/users/austenstone/projects/`*`5`* the project number is *`5`*.
+
 You will need to [create a PAT(Personal Access Token)](https://github.com/settings/tokens/new?scopes=admin:org) that has `admin:org` access so we can read/write to the project.
 
 Add this PAT as a secret, see [Creating encrypted secrets for a repository](https://docs.github.com/en/enterprise-cloud@latest/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
