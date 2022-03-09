@@ -105,20 +105,21 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
     }`;
     }
     const headers = { 'GraphQL-Features': 'projects_next_graphql', };
-    const projectNext = yield octokit.graphql(projectQuery);
-    core.info(JSON.stringify(projectNext, null, 2));
+    const projectNextResponse = yield octokit.graphql(projectQuery);
+    core.info(JSON.stringify(projectNextResponse, null, 2));
     core.endGroup();
-    if (!((_b = (_a = projectNext === null || projectNext === void 0 ? void 0 : projectNext.organization) === null || _a === void 0 ? void 0 : _a.projectNext) === null || _b === void 0 ? void 0 : _b.id)) {
+    const projectNext = ((_a = projectNextResponse === null || projectNextResponse === void 0 ? void 0 : projectNextResponse.organization) === null || _a === void 0 ? void 0 : _a.projectNext) || ((_b = projectNextResponse === null || projectNextResponse === void 0 ? void 0 : projectNextResponse.user) === null || _b === void 0 ? void 0 : _b.projectNext);
+    if (!(projectNext === null || projectNext === void 0 ? void 0 : projectNext.id)) {
         core.setFailed(`Project number \u001b[1m${projectNumber}\u001B[m not found for login \u001b[1m${organization || user}\u001B[m.
 Check the number of the project and that it is owned by \u001b[1m${organization || user}\u001B[m.
 EX: \u001b[1mhttps://github.com/orgs/github/projects/5380\u001B[m has the number \u001b[1m5380\u001B[m.`);
         return;
     }
-    core.startGroup(`GraphQL add issue \u001b[1m${issue.title}\u001B[m to project \u001b[1m${projectNext.organization.projectNext.title}\u001B[m`);
+    core.startGroup(`GraphQL add issue \u001b[1m${issue.title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m`);
     const result = yield octokit.graphql({
         query: `mutation {
       addProjectNextItem(
-        input: { contentId: "${issue.node_id}", projectId: "${projectNext.organization.projectNext.id}" }
+        input: { contentId: "${issue.node_id}", projectId: "${projectNext.id}" }
       ) {
         projectNextItem {
           id
@@ -130,10 +131,10 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/5380\u001B[m has the number
     core.info(JSON.stringify(result, null, 2));
     core.endGroup();
     if (!((_d = (_c = result === null || result === void 0 ? void 0 : result.addProjectNextItem) === null || _c === void 0 ? void 0 : _c.projectNextItem) === null || _d === void 0 ? void 0 : _d.id)) {
-        core.setFailed(`Failed to add issue to project '${projectNext.organization.projectNext.title}'.`);
+        core.setFailed(`Failed to add issue to project '${projectNext.title}'.`);
         return;
     }
-    core.info(`✅ Successfully added issue \u001b[1m${issue.title}\u001B[m to project \u001b[1m${projectNext.organization.projectNext.title}\u001B[m.
+    core.info(`✅ Successfully added issue \u001b[1m${issue.title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m.
 https://github.com/orgs/github/projects/${projectNumber}`);
 });
 exports["default"] = run;
