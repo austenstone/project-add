@@ -1,4 +1,4 @@
-# Issue to Project
+# Add Issue to Project (BETA) ➕
 
 This GitHub [action](https://docs.github.com/en/actions) adds issues to the [Projects (beta)](https://github.com/features/issues).
 
