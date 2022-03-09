@@ -33,8 +33,8 @@ const run = async (): Promise<void> => {
 
   if (!projectNext?.organization?.projectNext?.id) {
     core.setFailed(`Project number \u001b[1m${projectNumber}\u001B[m not found for login \u001b[1m${owner}\u001B[m.
-  Check the number of the project and that it is owned by \u001b[1m${owner}\u001B[m.
-  EX: \u001b[1mhttps://github.com/orgs/github/projects/5380\u001B[m has the number \u001b[1m5380\u001B[m.`)
+Check the number of the project and that it is owned by \u001b[1m${owner}\u001B[m.
+EX: \u001b[1mhttps://github.com/orgs/github/projects/5380\u001B[m has the number \u001b[1m5380\u001B[m.`)
     return
   }
 
@@ -60,7 +60,7 @@ const run = async (): Promise<void> => {
   }
 
   core.info(`✅ Successfully added issue \u001b[1m${issue.title}\u001B[m to project \u001b[1m${projectNext.organization.projectNext.title}\u001B[m.
-  https://github.com/orgs/github/projects/${projectNumber}`);
+https://github.com/orgs/github/projects/${projectNumber}`);
 };
 
 export default run;
