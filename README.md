@@ -5,7 +5,7 @@ This GitHub [action](https://docs.github.com/en/actions) adds issues to the [Pro
 ## Usage
 Create a workflow (eg: `.github/workflows/on-issue-open.yml`). See [Creating a Workflow file](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file).
 
-You will need a project number. For example [`https://github.com/users/austenstone/projects/`*`5`*](https://github.com/users/austenstone/projects/5) the project number is *`5`*.
+You will need a project number for input `project-number`. For example [`https://github.com/users/austenstone/projects/`*`5`*](https://github.com/users/austenstone/projects/5) the project number is *`5`*.
 
 You will need to [create a PAT(Personal Access Token)](https://github.com/settings/tokens/new?scopes=admin:org) that has `admin:org` access so we can read/write to the project.
 
@@ -29,7 +29,7 @@ jobs:
       - uses: austenstone/project-add-issue@main
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-          project_number: 1234
+          project-number: 1234
 ```
 
 ### Users
@@ -51,7 +51,7 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           user: ${{ github.repository_owner }}
-          project_number: 1234
+          project-number: 1234
 ```
 
 ## Input Settings
@@ -60,7 +60,7 @@ Various inputs are defined in [`action.yml`](action.yml):
 | Name | Description | Default |
 | --- | - | - |
 | **token** | Token to use to authorize label changes. Typically the GITHUB_TOKEN secret | N/A |
-| **project_number** | The project number. Get this from the URL. | N/A |
+| **project-number** | The project number. Get this from the URL. | N/A |
 | organization | The organization that owns of the project. | _the repository owner_
 | user | The user that owns of the project. | N/A
 

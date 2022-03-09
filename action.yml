@@ -5,7 +5,7 @@ inputs:
   github-token:
     description: "The GITHUB_TOKEN secret"
     required: true
-  project_number:
+  project-number:
     description: "The number of the project. Get this from the URL."
     required: true
   organization:

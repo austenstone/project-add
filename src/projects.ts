@@ -8,7 +8,7 @@ const run = async (): Promise<void> => {
   if (!github.context.payload) return core.setFailed('No payload. Make sure this is an issue event.')
   if (!github.context.payload.issue) return core.setFailed('No issue found in the payload. Make sure this is an issue event.')
   const token = core.getInput('github-token') || process.env.GITHUB_TOKEN
-  const projectNumber = parseInt(core.getInput('project_number'))
+  const projectNumber = parseInt(core.getInput('project-number'))
   const organization = core.getInput('organization') || github.context.repo.owner
   const user = core.getInput('user')
   const issue = github.context.payload.issue

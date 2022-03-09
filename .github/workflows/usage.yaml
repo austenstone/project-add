@@ -13,4 +13,4 @@ jobs:
         with:
           user: ${{ github.repository_owner }}
           github-token: "${{ secrets.MY_TOKEN }}"
-          project_number: 5
+          project-number: 5
