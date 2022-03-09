@@ -13,9 +13,6 @@ const run = async (): Promise<void> => {
   const user = core.getInput('user')
   const issue = github.context.payload.issue
 
-  console.log(github)
-  console.log(github.context)
-
   if (!token) return core.setFailed('No input \'token\'')
   if (!projectNumber) return core.setFailed('No input \'projectNumber\'')
   if (!issue) return core.setFailed('No issue in event context')
