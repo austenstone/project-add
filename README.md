@@ -45,7 +45,7 @@ jobs:
   add_issue_to_project:
     runs-on: ubuntu-latest
     steps:
-      - uses: austenstone/project-add-issue@main
+      - uses: austenstone/project-add-issue@v4
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           user: ${{ github.repository_owner }}
