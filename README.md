@@ -1,9 +1,9 @@
-# Add Issue to Project (BETA) ➕
+# Add Issue/PR to Project (BETA) ➕
 
-This GitHub [action](https://docs.github.com/en/actions) adds issues to the [Projects (beta)](https://github.com/features/issues).
+This GitHub [action](https://docs.github.com/en/actions) adds issues or pull requests to a [Project (beta)](https://github.com/features/issues).
 
 ## Usage
-Create a workflow (eg: `.github/workflows/on-issue-open.yml`). See [Creating a Workflow file](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file).
+Create a workflow (eg: `.github/workflows/on-issue-pr-open.yml`). See [Creating a Workflow file](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file).
 
 You will need a project number for input `project-number`. For example [`https://github.com/users/austenstone/projects/`*`5`*](https://github.com/users/austenstone/projects/5) the project number is *`5`*.
 
@@ -17,16 +17,18 @@ If your project is part of an organization that has SAML enabled, see [Authorizi
 
 #### Default Workflow for organization owned project
 ```yml
-name: "Add Issue to Project"
+name: "Add to Project"
 on:
   issues:
     types: [opened]
+  pull_request:
+    types: [opened]
 
 jobs:
-  add_issue_to_project:
+  add_to_project:
     runs-on: ubuntu-latest
     steps:
-      - uses: austenstone/project-add-issue@main
+      - uses: austenstone/project-add@main
         with:
           github-token: "${{ secrets.MY_TOKEN }}"
           project-number: 1234
@@ -38,16 +40,11 @@ For user owned projects you must provide the `user` input in the workflow.
 
 #### Default Workflow for user owned project
 ```yml
-name: "Add Issue to Project"
-on:
-  issues:
-    types: [opened]
-
 jobs:
-  add_issue_to_project:
+  add_to_project:
     runs-on: ubuntu-latest
     steps:
-      - uses: austenstone/project-add-issue@v4
+      - uses: austenstone/project-add@v4
         with:
           github-token: "${{ secrets.MY_TOKEN }}"
           user: ${{ github.repository_owner }}
