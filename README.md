@@ -19,7 +19,7 @@ jobs:
       - uses: austenstone/project-add-issue@main
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-          project_next_number: 1234
+          project_number: 1234
 ```
 
 ## Input Settings
