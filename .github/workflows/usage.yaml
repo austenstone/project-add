@@ -10,5 +10,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
+          user: ${{ github.repository_owner }}
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           project_number: 1234
