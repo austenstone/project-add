@@ -12,5 +12,5 @@ jobs:
       - uses: ./
         with:
           user: ${{ github.repository_owner }}
-          github-token: "${{ secrets.MY_TOKEN }}"
           project-number: 5
+          # github-token: "${{ secrets.MY_TOKEN }}"

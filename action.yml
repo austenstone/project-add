@@ -2,12 +2,13 @@ name: "Project Add Issue"
 description: "Add an issue to a project (beta)"
 author: "Austen Stone"
 inputs:
-  github-token:
-    description: "The GITHUB_TOKEN secret"
-    required: true
   project-number:
     description: "The number of the project. Get this from the URL."
     required: true
+  github-token:
+    description: "The GITHUB_TOKEN secret"
+    required: false
+    default: ${{ github.token }}
   organization:
     description: "The organization that owns the project."
     required: false
