@@ -1,5 +1,5 @@
 name: "Project Add Issue"
-description: "Add an issue to a project"
+description: "Add an issue to a project (beta)"
 author: "Austen Stone"
 inputs:
   github-token:
