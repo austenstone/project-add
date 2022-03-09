@@ -1,5 +1,5 @@
-name: "OpenAI Issue Labeler"
-description: "Labels issues using OpenAI's Classification API powered by GPT-3 models!"
+name: "Add Issue to Project"
+description: "Add an issue to a project"
 author: "Austen Stone"
 inputs:
   github-token:
