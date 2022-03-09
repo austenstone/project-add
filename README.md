@@ -19,11 +19,8 @@ jobs:
       - uses: austenstone/project-add-issue@main
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          openai-api-key: "${{ secrets.OPENAI_API_KEY }}"
+          project_next_number: 5409
 ```
-That's it. Your issues are now labeled by powerful AI models! 🧠
-
-![RobotDancingDanceGIF](https://user-images.githubusercontent.com/22425467/151486237-5a416561-c2e9-4c61-ad56-12d77fca0206.gif)
 
 ## Input Settings
 Various inputs are defined in [`action.yml`](action.yml) to let you configure the labeler:
@@ -32,33 +29,5 @@ See the [Classifications API reference](https://beta.openai.com/docs/api-referen
 | Name | Description | Default |
 | --- | - | - |
 | **token** | Token to use to authorize label changes. Typically the GITHUB_TOKEN secret | N/A |
-| **openai&#x2011;api&#x2011;key** | The OpenAI API key secret | N/A |
-| temperature | Higher values mean the model will take more risks. | `0`
-| model | ID of the engine to use for completion. You can select one of ada, babbage, curie, or davinci. | `curie`
-| search&#x2011;model | ID of the engine to use for Search. You can select one of ada, babbage, curie, or davinci. | `ada`
-
-## How?
-The model uses Labeled data to classify the new piece of data.
-
-### Inputs
-1. All repository labels
-3. Examples of past label usage
-    - Label description and label
-    - Issue title and label
-    - Issue body and label
-4. A query to find a label for
-    - New Issue title
-    - New Issue body
-
-### Outputs
-The label! It will be automatically added to your issue.
-
-This [workflow](https://github.com/austenstone/project-add-issue/actions/workflows/usage.yaml) runs on this repo. Check out the [issues](https://github.com/austenstone/project-add-issue/issues) and feel free to open a new one.
-
-#### Example Issues
-- [We need to add a rate limiter to login](https://github.com/austenstone/project-add-issue/issues/80)
-- [Where are the docs?](https://github.com/austenstone/project-add-issue/issues/37)
-- [Logo in the navbar needs to be bigger](https://github.com/austenstone/project-add-issue/issues/36)
-
-## Known (Actual) Issues ⚠️
-- ~~When issue body is greater than 4096 it causes an error with the OpenAI API.~~
+| **project_next_number** | The project number. Get this from the URL. | N/A |
+| owner | The owner of the project board. | _the repository owner_
