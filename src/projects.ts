@@ -84,7 +84,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/5380\u001B[m has the number
     return
   }
 
-  const link = `https://github.com/${organization ? ('orgs/' + organization) : ('users/' + user)}/projects/${projectNumber}`
+  const link = `https://github.com/${user ? ('users/' + user) : ('orgs/' + organization)}/projects/${projectNumber}`
   core.info(`✅ Successfully added issue \u001b[1m${issue.title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m.
 ${link}`)
 }
