@@ -9,7 +9,7 @@ const run = async (): Promise<void> => {
   if (!github.context.payload.issue) return core.setFailed('No issue found in the payload. Make sure this is an issue event.')
   const token = core.getInput('github-token') || process.env.GITHUB_TOKEN
   const projectNumber = parseInt(core.getInput('project_number'))
-  const organization = core.getInput('organization ')
+  const organization = core.getInput('organization') || github.context.repo.owner
   const user = core.getInput('user')
   const issue = github.context.payload.issue
 
@@ -21,16 +21,7 @@ const run = async (): Promise<void> => {
 
   core.startGroup(`GraphQL get project number \u001b[1m${projectNumber}\u001B[m`)
   let projectQuery
-  if (organization) {
-    projectQuery = `{
-      organization(login: "${organization}") {
-        projectNext(number: ${projectNumber}) {
-          title,
-          id
-        }
-      }
-    }`
-  } else if (user) {
+  if (user) {
     projectQuery = `{
       user(login: "${user}") {
         projectNext(number: ${projectNumber}) {
@@ -39,15 +30,17 @@ const run = async (): Promise<void> => {
         }
       }
     }`
-  } else {
+  } else if (organization) {
     projectQuery = `{
-      organization(login: "${github.context.repo.owner}") {
+      organization(login: "${organization}") {
         projectNext(number: ${projectNumber}) {
           title,
           id
         }
       }
     }`
+  } else {
+    core.setFailed('No input \'organization\' or \'user\'')
   }
   const headers = { 'GraphQL-Features': 'projects_next_graphql', }
   const projectNextResponse: any = await octokit.graphql(projectQuery)
@@ -84,7 +77,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/5380\u001B[m has the number
     return
   }
 
-  const link = `https://github.com/${user ? ('users/' + user) : ('orgs/' + organization)}/projects/${projectNumber}`
+  const link = `https://github.com/${user ? ('users/' + user) : ('orgs/' + (organization))}/projects/${projectNumber}`
   core.info(`✅ Successfully added issue \u001b[1m${issue.title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m.
 ${link}`)
 }
