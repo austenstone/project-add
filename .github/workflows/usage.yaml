@@ -1,4 +1,4 @@
-name: "Add Issue to Project"
+name: "Add Issue/PR to Project"
 on:
   issues:
     types: [opened]

@@ -1,5 +1,5 @@
-name: "Project Add Issue"
-description: "Add an issue to a project (beta)"
+name: "Project Add"
+description: "Add an issue or pull request to a project (beta)"
 author: "Austen Stone"
 inputs:
   project-number:
