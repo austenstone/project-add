@@ -2,23 +2,14 @@ name: "OpenAI Issue Labeler"
 description: "Labels issues using OpenAI's Classification API powered by GPT-3 models!"
 author: "Austen Stone"
 inputs:
-  token:
+  github-token:
     description: "The GITHUB_TOKEN secret"
     required: true
-  openai-api-key:
-    description: "The OpenAI API key secret"
+  project_number:
+    description: "The number of the project. Get this from the URL."
     required: true
-  temperature:
-    description: "Higher values mean the model will take more risks."
-    default: "0"
-    required: false
-  model:
-    description: "ID of the engine to use for completion. You can select one of ada, babbage, curie, or davinci."
-    default: "curie"
-    required: false
-  search-model:
-    description: "ID of the engine to use for Search. You can select one of ada, babbage, curie, or davinci."
-    default: "ada"
+  owner:
+    description: "The owner of the project. Either the organization or the user."
     required: false
 
 runs:

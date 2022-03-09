@@ -1,3 +1,3 @@
-import run from './labeler';
+import run from './projects';
 
 run();

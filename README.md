@@ -1,29 +1,22 @@
-# OpenAI Issue Labeler 🤖
+# Issue to Project
 
-This GitHub [action](https://docs.github.com/en/actions) labels issues using [OpenAI's Classification API](https://beta.openai.com/docs/guides/classifications) powered by GPT-3 models! We are using [`curie`](https://beta.openai.com/docs/engines/curie) as our completion model and [`ada`](https://beta.openai.com/docs/engines/ada) as the search model.
-
-It uses your existing [labels](https://docs.github.com/en/issues/using-labels-and-milestones-to-track-work/managing-labels) and past GitHub [issues](https://docs.github.com/en/issues) to train a model that can predict the labels of new issues. When someone opens a new issue this action will automatically label it.
-
-## Requirements
-You will need to sign up for the [OpenAI API](https://openai.com/api/) and get an [OpenAI API Key](https://beta.openai.com/account/api-keys).
-
-Add this OpenAI API Key as a secret called `OPENAI_API_KEY`. See [Creating encrypted secrets for a repository](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
+This GitHub [action](https://docs.github.com/en/actions) adds issues to the [Projects (beta)](https://github.com/features/issues).
 
 ## Usage
-Create a workflow (eg: `.github/workflows/labeler.yml`). See [Creating a Workflow file](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file).
+Create a workflow (eg: `.github/workflows/on-issue-open.yml`). See [Creating a Workflow file](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file).
 
 #### Default Workflow
 ```yml
-name: "OpenAI Issue Labeler"
+name: "Issue to project"
 on:
   issues:
-    types: [opened, edited]
+    types: [opened]
 
 jobs:
   triage:
     runs-on: ubuntu-latest
     steps:
-      - uses: austenstone/openai-issue-labeler@main
+      - uses: austenstone/project-add-issue@main
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
           openai-api-key: "${{ secrets.OPENAI_API_KEY }}"
@@ -60,12 +53,12 @@ The model uses Labeled data to classify the new piece of data.
 ### Outputs
 The label! It will be automatically added to your issue.
 
-This [workflow](https://github.com/austenstone/openai-issue-labeler/actions/workflows/usage.yaml) runs on this repo. Check out the [issues](https://github.com/austenstone/openai-issue-labeler/issues) and feel free to open a new one.
+This [workflow](https://github.com/austenstone/project-add-issue/actions/workflows/usage.yaml) runs on this repo. Check out the [issues](https://github.com/austenstone/project-add-issue/issues) and feel free to open a new one.
 
 #### Example Issues
-- [We need to add a rate limiter to login](https://github.com/austenstone/openai-issue-labeler/issues/80)
-- [Where are the docs?](https://github.com/austenstone/openai-issue-labeler/issues/37)
-- [Logo in the navbar needs to be bigger](https://github.com/austenstone/openai-issue-labeler/issues/36)
+- [We need to add a rate limiter to login](https://github.com/austenstone/project-add-issue/issues/80)
+- [Where are the docs?](https://github.com/austenstone/project-add-issue/issues/37)
+- [Logo in the navbar needs to be bigger](https://github.com/austenstone/project-add-issue/issues/36)
 
 ## Known (Actual) Issues ⚠️
 - ~~When issue body is greater than 4096 it causes an error with the OpenAI API.~~
