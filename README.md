@@ -11,11 +11,11 @@ You will need to [create a PAT(Personal Access Token)](https://github.com/settin
 
 Add this PAT as a secret so we can use it as input `github-token`, see [Creating encrypted secrets for a repository](https://docs.github.com/en/enterprise-cloud@latest/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
 
-If your project is part of an organization that has SAML enabled, see [Authorizing a personal access token for use with SAML single sign-on](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on).
-
 ### Organizations
 
-#### Default Workflow for organization owned project
+If your project is part of an organization that has SAML enabled you must authorize the PAT, see [Authorizing a personal access token for use with SAML single sign-on](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on).
+
+#### Example: Add Issues and PRs
 ```yml
 name: "Add to Project"
 on:
@@ -43,6 +43,32 @@ For user owned projects you must provide the `user` input in the workflow.
           user: ${{ github.repository_owner }}
           github-token: "${{ secrets.MY_TOKEN }}"
           project-number: 1234
+```
+
+### Add Only Issues or Only PRs
+Modify the on event to be [`issues`](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#issues) or [`pull_request`](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request) or both. All activity types work.
+```yml
+on:
+  issues:
+    types: [opened]
+```
+#### Example: Add Issues Assigned to User
+```yml
+on:
+  issues:
+    types: [assigned]
+
+jobs:
+  add_assigned_to_project:
+    runs-on: ubuntu-latest
+    name: Add issue to project (beta)
+    steps:
+    - name: "Add issue that have been assigned to austenstone to project board"
+      uses: austenstone/project-add@v1
+      if: contains(github.event.issue.assignees.*.login, 'austenstone')
+      with:
+        github-token: ${{ secrets.MY_TOKEN }}
+        project-number: 5
 ```
 
 ## Input Settings
