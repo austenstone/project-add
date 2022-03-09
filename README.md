@@ -11,7 +11,9 @@ Add this PAT as a secret, see [Creating encrypted secrets for a repository](http
 
 If your project is part of an organization that has SAML enabled, see [Authorizing a personal access token for use with SAML single sign-on](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on).
 
-#### Default Workflow
+### Organizations
+
+#### Default Workflow for organization owned project
 ```yml
 name: "Add Issue to Project"
 on:
@@ -28,6 +30,28 @@ jobs:
           project_number: 1234
 ```
 
+### Users
+
+For user owned projects you must provide the `user` input in the workflow.
+
+#### Default Workflow for user owned project
+```yml
+name: "Add Issue to Project"
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add_issue_to_project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: austenstone/project-add-issue@main
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          user: ${{ github.repository_owner }}
+          project_number: 1234
+```
+
 ## Input Settings
 Various inputs are defined in [`action.yml`](action.yml):
 
@@ -35,4 +59,7 @@ Various inputs are defined in [`action.yml`](action.yml):
 | --- | - | - |
 | **token** | Token to use to authorize label changes. Typically the GITHUB_TOKEN secret | N/A |
 | **project_number** | The project number. Get this from the URL. | N/A |
-| owner | The owner of the project board. | _the repository owner_
+| organization | The organization that owns of the project. | _the repository owner_
+| user | The user that owns of the project. | N/A
+
+If you are using a user owned project board you must provide the `user` input.

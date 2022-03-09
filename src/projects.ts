@@ -9,7 +9,8 @@ const run = async (): Promise<void> => {
   if (!github.context.payload.issue) return core.setFailed('No issue found in the payload. Make sure this is an issue event.');
   const token = core.getInput('github-token') || process.env.GITHUB_TOKEN;
   const projectNumber = parseInt(core.getInput('project_number'));
-  const owner = core.getInput('owner ') || github.context.repo.owner;
+  const organization = core.getInput('organization ');
+  const user = core.getInput('user');
   const issue = github.context.payload.issue;
 
   if (!token) return core.setFailed('No input \'token\'');
@@ -19,15 +20,37 @@ const run = async (): Promise<void> => {
   const octokit: ClientType = github.getOctokit(token);
 
   core.startGroup(`GraphQL get project number \u001b[1m${projectNumber}\u001B[m`);
-  const headers = { 'GraphQL-Features': 'projects_next_graphql', }
-  const projectNext: any = await octokit.graphql(`{
-    organization(login: "${owner}") {
-      projectNext(number: ${projectNumber}) {
-        title,
-        id
+  let projectQuery;
+  if (organization) {
+    projectQuery = `{
+      organization(login: "${organization}") {
+        projectNext(number: ${projectNumber}) {
+          title,
+          id
+        }
       }
-    }
-  }`)
+    }`
+  } else if (user) {
+    projectQuery = `{
+      user(login: "${user}") {
+        projectNext(number: ${projectNumber}) {
+          title,
+          id
+        }
+      }
+    }`
+  } else {
+    projectQuery = `{
+      organization(login: "${github.context.repo.owner}") {
+        projectNext(number: ${projectNumber}) {
+          title,
+          id
+        }
+      }
+    }`
+  }
+  const headers = { 'GraphQL-Features': 'projects_next_graphql', }
+  const projectNext: any = await octokit.graphql(projectQuery)
   core.info(JSON.stringify(projectNext, null, 2))
   core.endGroup()
 

@@ -8,8 +8,11 @@ inputs:
   project_number:
     description: "The number of the project. Get this from the URL."
     required: true
-  owner:
-    description: "The owner of the project. Either the organization or the user."
+  organization:
+    description: "The organization that owns the project."
+    required: false
+  user:
+    description: "The user that owns the project."
     required: false
 
 runs:
