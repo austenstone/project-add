@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: austenstone/project-add-issue@main
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: "${{ secrets.MY_TOKEN }}"
           project-number: 1234
 ```
 
@@ -49,7 +49,7 @@ jobs:
     steps:
       - uses: austenstone/project-add-issue@v4
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: "${{ secrets.MY_TOKEN }}"
           user: ${{ github.repository_owner }}
           project-number: 1234
 ```
@@ -59,9 +59,9 @@ Various inputs are defined in [`action.yml`](action.yml):
 
 | Name | Description | Default |
 | --- | - | - |
-| **token** | Token to use to authorize label changes. Typically the GITHUB_TOKEN secret | N/A |
 | **project-number** | The project number. Get this from the URL. | N/A |
+| github-token | Token to use to authorize. This should be a personal access token. | ${{&nbsp;github.token&nbsp;}} |
 | organization | The organization that owns of the project. | _the repository owner_
 | user | The user that owns of the project. | N/A
 
-If you are using a user owned project board you must provide the `user` input `${{ github.repository_owner }}` is fine if you're the owner of the repository.
+If you are using a user owned project board you must provide the `user` input.<br>`${{ github.repository_owner }}` is fine if you're the owner of the repository.
