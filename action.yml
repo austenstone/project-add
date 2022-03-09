@@ -1,4 +1,4 @@
-name: "Add Issue to Project"
+name: "Project Add Issue"
 description: "Add an issue to a project"
 author: "Austen Stone"
 inputs:
@@ -17,5 +17,5 @@ runs:
   main: "dist/index.js"
 
 branding:
-  icon: "arrow-up-circle"
+  icon: "plus"
   color: "green"
