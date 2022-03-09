@@ -38,16 +38,10 @@ jobs:
 
 For user owned projects you must provide the `user` input in the workflow.
 
-#### Default Workflow for user owned project
 ```yml
-jobs:
-  add_to_project:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: austenstone/project-add@v4
         with:
-          github-token: "${{ secrets.MY_TOKEN }}"
           user: ${{ github.repository_owner }}
+          github-token: "${{ secrets.MY_TOKEN }}"
           project-number: 1234
 ```
 
