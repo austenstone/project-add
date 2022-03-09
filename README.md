@@ -13,12 +13,12 @@ on:
     types: [opened]
 
 jobs:
-  triage:
+  add_issue_to_project:
     runs-on: ubuntu-latest
     steps:
       - uses: austenstone/project-add-issue@main
         with:
-          token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
           project_next_number: 1234
 ```
 
