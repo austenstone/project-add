@@ -1,20 +1,20 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { WebhookPayload } from '@actions/github/lib/interfaces';
+import { WebhookPayload } from '@actions/github/lib/interfaces'
 
 type ClientType = ReturnType<typeof github.getOctokit>
 
 interface Input {
-  token: string;
-  projectNumber: number;
-  node_id: string;
-  type: string;
-  title: string;
-  issue?: WebhookPayload['issue'];
-  pr?: WebhookPayload["pull_request"];
-  login: string;
-  organization?: string;
-  user?: string;
+  token: string
+  projectNumber: number
+  node_id: string
+  type: string
+  title: string
+  issue?: WebhookPayload['issue']
+  pr?: WebhookPayload["pull_request"]
+  login: string
+  organization?: string
+  user?: string
   fields: { [key: string]: string }
 }
 
@@ -55,12 +55,12 @@ export function getInputs(): Input {
       if (fieldsValueArr[i]) {
         obj[f] = fieldsValueArr[i]
       }
-      return obj;
+      return obj
     }, {})
   }
 
-  console.log(ret);
-  return ret;
+  console.log(ret)
+  return ret
 }
 
 const run = async (): Promise<void> => {
@@ -117,7 +117,7 @@ const run = async (): Promise<void> => {
       }`,
       headers
     })
-    return result?.addProjectNextItem?.projectNextItem?.id;
+    return result?.addProjectNextItem?.projectNextItem?.id
   }
   const projectFieldsGet = async (projectId: string): Promise<any> => {
     const result: any = await octokit.graphql({
@@ -136,8 +136,8 @@ const run = async (): Promise<void> => {
       }`,
       headers
     })
-    console.log('result', result);
-    return result?.node?.fields?.nodes;
+    console.log('result', result)
+    return result?.node?.fields?.nodes
   }
   const projectFieldUpdate = async (projectId: string, itemId: string, fieldId: string, value: any): Promise<any> => {
     const result: any = await octokit.graphql({
@@ -152,7 +152,8 @@ const run = async (): Promise<void> => {
       }`,
       headers
     })
-    return result?.updateProjectNextItemField?.projectNextItem?.id;
+    console.log(result, null, 2)
+    return result?.updateProjectNextItemField?.projectNextItem?.id
   }
 
   const octokit: ClientType = github.getOctokit(token)
@@ -177,7 +178,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
   if (fields) {
     const projectFields = await projectFieldsGet(projectNext.id)
     Object.entries(fields).forEach(([name, value]) => {
-      const fieldId = projectFields.find((field) => name === field.name).id;
+      const fieldId = projectFields.find((field) => name === field.name).id
       const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value)
       core.info(JSON.stringify(updatedFieldId, null, 2))
     })

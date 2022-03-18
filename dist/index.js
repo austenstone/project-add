@@ -187,6 +187,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
       }`,
             headers
         });
+        console.log(result, null, 2);
         return (_h = (_g = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _g === void 0 ? void 0 : _g.projectNextItem) === null || _h === void 0 ? void 0 : _h.id;
     });
     const octokit = github.getOctokit(token);
