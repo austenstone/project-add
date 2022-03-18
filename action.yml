@@ -8,14 +8,19 @@ inputs:
   github-token:
     description: "The GITHUB_TOKEN secret"
     default: ${{ github.token }}
+    required: false
   organization:
     description: "The organization that owns the project."
+    required: false
   user:
     description: "The user that owns the project."
+    required: false
   fields:
     description: "The fields to modify."
+    required: false
   fields-value:
     description: "The fields values."
+    required: false
 
 runs:
   using: "node16"

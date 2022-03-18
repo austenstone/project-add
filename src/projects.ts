@@ -22,6 +22,7 @@ export function getInputs(): Input {
   if (isNaN(result.projectNumber)) throw `No input 'projectNumber'`
   result.organization = core.getInput('organization') || github.context.repo.owner
   result.user = core.getInput('user')
+  console.log(result);
   if (result.organization) {
     result.login = result.organization
   } else if (result.user) {
