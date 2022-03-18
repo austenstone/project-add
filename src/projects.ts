@@ -176,10 +176,8 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
 
   if (fields) {
     const projectFields = await projectFieldsGet(projectNext.id)
-    console.log('fields', fields)
-    console.log('projectFields', projectFields)
-    Object.entries(fields).forEach(([key, value]) => {
-      const fieldId = projectFields[key];
+    Object.entries(fields).forEach(([name, value]) => {
+      const fieldId = projectFields.find((field) => name === field.name).id;
       const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value)
       core.info(JSON.stringify(updatedFieldId, null, 2))
     })
