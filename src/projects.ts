@@ -1,20 +1,61 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import { WebhookPayload } from '@actions/github/lib/interfaces';
 
 type ClientType = ReturnType<typeof github.getOctokit>
 
+interface Input {
+  token: string;
+  projectNumber: number;
+  issue?: WebhookPayload["issue"]?;
+  pr?: WebhookPayload["pull_request"];
+  login: string;
+  organization?: string;
+  user?: string;
+  fields: { [key: string]: string }
+}
 
+export function getInputs(): Input {
+  const result = {} as Input
+  result.token = core.getInput('github-token')
+  result.projectNumber = parseInt(core.getInput('project-number'))
+  if (isNaN(result.projectNumber)) throw `No input 'projectNumber'`
+  result.organization = core.getInput('organization') || github.context.repo.owner
+  result.user = core.getInput('user')
+  if (result.organization) {
+    result.login = result.organization
+  } else if (result.user) {
+    result.login = result.user
+  } else {
+    throw `Missing payload 'organization' or 'user'`
+  }
+  if (github.context.payload.issue) {
+    result.issue = github.context.payload.issue
+  } if (github.context.payload.pull_request) {
+    result.pr = github.context.payload.pull_request
+  } else {
+    throw `Missing payload 'pull_request' or 'issue'`
+  }
+
+  const fields = core.getInput('fields')
+  const fieldsValue = core.getInput('fields-value')
+  const fieldsValueArr = fieldsValue.split(',')
+  if (fields) {
+    result.fields = fields.split(',').reduce((obj, f, i) => {
+      if (fieldsValueArr[i]) {
+        obj[f] = fieldsValueArr[i]
+      }
+      return obj;
+    }, {})
+  }
+
+  return result;
+}
 
 const run = async (): Promise<void> => {
   if (!github.context) return core.setFailed('No GitHub context.')
   if (!github.context.payload) return core.setFailed('No event. Make sure this is an issue or pr event.')
-  const token = core.getInput('github-token') || process.env.GITHUB_TOKEN
-  const projectNumber = parseInt(core.getInput('project-number'))
-  const organization = core.getInput('organization') || github.context.repo.owner
-  const user = core.getInput('user')
-  const login = organization || user;
-  const issue = github.context.payload.issue
-  const pr = github.context.payload.pull_request
+  const inputs = getInputs();
   const headers = { 'GraphQL-Features': 'projects_next_graphql', }
   const projectGet = async (projectNumber: number, organization?: string, user?: string): Promise<any> => {
     let projectQuery
@@ -91,10 +132,16 @@ const run = async (): Promise<void> => {
     })
     return result?.updateProjectNextItemField?.projectNextItem?.id;
   }
-  
-  if (!token) return core.setFailed('No input \'token\'')
-  if (!projectNumber) return core.setFailed('No input \'projectNumber\'')
-  if (!issue && !pr) return core.setFailed('No issue or pr in event context')
+  const {
+    issue,
+    pr,
+    projectNumber,
+    token,
+    login,
+    organization,
+    user,
+    fields
+  } = inputs;
 
   const node_id = issue?.node_id || pr?.node_id
   if (!node_id) return core.setFailed('Can\'t find \'node_id\' in event context')
@@ -127,11 +174,13 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
     return
   }
 
-  const fields = await projectFieldsGet(projectNext.id);
-
-  const fieldsToMutate = fields.filter(())
-
-  // const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value);
+  if (fields) {
+    const projectFields = await projectFieldsGet(projectNext.id);
+    console.log('fields', fields);
+    console.log('projectFields', projectFields);
+    // const fieldsToMutate = fields.filter()
+    // const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value);
+  }
 
   const link = `https://github.com/${user ? 'users/' + user : 'orgs/' + organization}/projects/${projectNumber}`
   core.info(`✅ Successfully added ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m.
