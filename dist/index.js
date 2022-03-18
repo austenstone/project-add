@@ -204,6 +204,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
     core.startGroup(`Add ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m`);
     const itemId = yield projectAdd(projectNext.id, node_id);
     core.info(JSON.stringify(itemId, null, 2));
+    core.setOutput('id', itemId);
     core.endGroup();
     if (fields) {
         const projectFields = yield projectFieldsGet(projectNext.id);
