@@ -79,9 +79,9 @@ const run = async (): Promise<void> => {
   } = getInputs()
   const headers = { 'GraphQL-Features': 'projects_next_graphql', }
   const projectGet = async (projectNumber: number, organization?: string, user?: string): Promise<any> => {
-    let projectQuery
+    let query
     if (user) {
-      projectQuery = `{
+      query = `{
         user(login: "${user}") {
           projectNext(number: ${projectNumber}) {
             title,
@@ -90,7 +90,7 @@ const run = async (): Promise<void> => {
         }
       }`
     } else if (organization) {
-      projectQuery = `{
+      query = `{
         organization(login: "${organization}") {
           projectNext(number: ${projectNumber}) {
             title,
@@ -101,8 +101,8 @@ const run = async (): Promise<void> => {
     } else {
       core.setFailed('No input \'organization\' or \'user\'')
     }
-    const projectNextResponse: any = await octokit.graphql(projectQuery)
-    return projectNextResponse?.organization?.projectNext || projectNextResponse?.user?.projectNext
+    const response: any = await octokit.graphql(query)
+    return response?.organization?.projectNext || response?.user?.projectNext
   }
   const projectAdd = async (projectId: string, contentId: string): Promise<string> => {
     const result: any = await octokit.graphql({
@@ -136,6 +136,7 @@ const run = async (): Promise<void> => {
       }`,
       headers
     })
+    console.log('result', result);
     return result?.ProjectNext?.fields;
   }
   const projectFieldUpdate = async (projectId: string, itemId: string, fieldId: string, value: any): Promise<any> => {

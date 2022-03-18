@@ -109,9 +109,9 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
     const headers = { 'GraphQL-Features': 'projects_next_graphql', };
     const projectGet = (projectNumber, organization, user) => __awaiter(void 0, void 0, void 0, function* () {
         var _a, _b;
-        let projectQuery;
+        let query;
         if (user) {
-            projectQuery = `{
+            query = `{
         user(login: "${user}") {
           projectNext(number: ${projectNumber}) {
             title,
@@ -121,7 +121,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
       }`;
         }
         else if (organization) {
-            projectQuery = `{
+            query = `{
         organization(login: "${organization}") {
           projectNext(number: ${projectNumber}) {
             title,
@@ -133,8 +133,8 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         else {
             core.setFailed('No input \'organization\' or \'user\'');
         }
-        const projectNextResponse = yield octokit.graphql(projectQuery);
-        return ((_a = projectNextResponse === null || projectNextResponse === void 0 ? void 0 : projectNextResponse.organization) === null || _a === void 0 ? void 0 : _a.projectNext) || ((_b = projectNextResponse === null || projectNextResponse === void 0 ? void 0 : projectNextResponse.user) === null || _b === void 0 ? void 0 : _b.projectNext);
+        const response = yield octokit.graphql(query);
+        return ((_a = response === null || response === void 0 ? void 0 : response.organization) === null || _a === void 0 ? void 0 : _a.projectNext) || ((_b = response === null || response === void 0 ? void 0 : response.user) === null || _b === void 0 ? void 0 : _b.projectNext);
     });
     const projectAdd = (projectId, contentId) => __awaiter(void 0, void 0, void 0, function* () {
         var _c, _d;
@@ -170,6 +170,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
       }`,
             headers
         });
+        console.log('result', result);
         return (_e = result === null || result === void 0 ? void 0 : result.ProjectNext) === null || _e === void 0 ? void 0 : _e.fields;
     });
     const projectFieldUpdate = (projectId, itemId, fieldId, value) => __awaiter(void 0, void 0, void 0, function* () {
