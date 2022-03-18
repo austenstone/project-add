@@ -173,11 +173,6 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
   core.info(JSON.stringify(itemId, null, 2))
   core.endGroup()
 
-  if (itemId) {
-    core.setFailed(`Failed to add ${type} to project '${projectNext.title}'. ${JSON.stringify(itemId)}`)
-    return
-  }
-
   if (fields) {
     const projectFields = await projectFieldsGet(projectNext.id)
     console.log('fields', fields)
