@@ -96,6 +96,7 @@ function getInputs() {
             return obj;
         }, {});
     }
+    console.log(ret);
     return ret;
 }
 exports.getInputs = getInputs;
@@ -104,7 +105,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         return core.setFailed('No GitHub context.');
     if (!github.context.payload)
         return core.setFailed('No event. Make sure this is an issue or pr event.');
-    const inputs = getInputs();
+    const { token, projectNumber, node_id, type, title, login, organization, user, fields, } = getInputs();
     const headers = { 'GraphQL-Features': 'projects_next_graphql', };
     const projectGet = (projectNumber, organization, user) => __awaiter(void 0, void 0, void 0, function* () {
         var _a, _b;
@@ -187,7 +188,6 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         });
         return (_g = (_f = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _f === void 0 ? void 0 : _f.projectNextItem) === null || _g === void 0 ? void 0 : _g.id;
     });
-    const { token, projectNumber, node_id, type, title, login, organization, user, fields, } = inputs;
     const octokit = github.getOctokit(token);
     core.startGroup(`Get project number \u001b[1m${projectNumber}\u001B[m`);
     const projectNext = yield projectGet(projectNumber, organization, user);

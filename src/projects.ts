@@ -47,8 +47,6 @@ export function getInputs(): Input {
     throw `Missing payload 'pull_request' or 'issue'`
   }
 
-
-
   const fields = core.getInput('fields')
   const fieldsValue = core.getInput('fields-value')
   const fieldsValueArr = fieldsValue.split(',')
@@ -61,13 +59,24 @@ export function getInputs(): Input {
     }, {})
   }
 
+  console.log(ret);
   return ret;
 }
 
 const run = async (): Promise<void> => {
   if (!github.context) return core.setFailed('No GitHub context.')
   if (!github.context.payload) return core.setFailed('No event. Make sure this is an issue or pr event.')
-  const inputs = getInputs()
+  const {
+    token,
+    projectNumber,
+    node_id,
+    type,
+    title,
+    login,
+    organization,
+    user,
+    fields,
+  } = getInputs()
   const headers = { 'GraphQL-Features': 'projects_next_graphql', }
   const projectGet = async (projectNumber: number, organization?: string, user?: string): Promise<any> => {
     let projectQuery
@@ -144,17 +153,6 @@ const run = async (): Promise<void> => {
     })
     return result?.updateProjectNextItemField?.projectNextItem?.id;
   }
-  const {
-    token,
-    projectNumber,
-    node_id,
-    type,
-    title,
-    login,
-    organization,
-    user,
-    fields,
-  } = inputs;
 
   const octokit: ClientType = github.getOctokit(token)
 
