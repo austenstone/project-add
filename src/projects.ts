@@ -3,6 +3,8 @@ import * as github from '@actions/github'
 
 type ClientType = ReturnType<typeof github.getOctokit>
 
+
+
 const run = async (): Promise<void> => {
   if (!github.context) return core.setFailed('No GitHub context.')
   if (!github.context.payload) return core.setFailed('No event. Make sure this is an issue or pr event.')
@@ -13,7 +15,83 @@ const run = async (): Promise<void> => {
   const login = organization || user;
   const issue = github.context.payload.issue
   const pr = github.context.payload.pull_request
-
+  const headers = { 'GraphQL-Features': 'projects_next_graphql', }
+  const projectGet = async (projectNumber: number, organization?: string, user?: string): Promise<any> => {
+    let projectQuery
+    if (user) {
+      projectQuery = `{
+        user(login: "${user}") {
+          projectNext(number: ${projectNumber}) {
+            title,
+            id
+          }
+        }
+      }`
+    } else if (organization) {
+      projectQuery = `{
+        organization(login: "${organization}") {
+          projectNext(number: ${projectNumber}) {
+            title,
+            id
+          }
+        }
+      }`
+    } else {
+      core.setFailed('No input \'organization\' or \'user\'')
+    }
+    const projectNextResponse: any = await octokit.graphql(projectQuery)
+    return projectNextResponse;
+  }
+  const projectAdd = async (projectId: string, contentId: string): Promise<string> => {
+    const result: any = await octokit.graphql({
+      query: `mutation {
+        addProjectNextItem(
+          input: { contentId: "${contentId}", projectId: "${projectId}" }
+        ) {
+          projectNextItem {
+            id
+          }
+        }
+      }`,
+      headers
+    })
+    return result?.addProjectNextItem?.projectNextItem?.id;
+  }
+  const projectFieldsGet = async (projectId: string): Promise<any> => {
+    const result: any = await octokit.graphql({
+      query: `{
+        node(id: "${projectId}") {
+          ... on ProjectNext {
+            fields(first: 20) {
+              nodes {
+                id
+                name
+                settings
+              }
+            }
+          }
+        }
+      }`,
+      headers
+    })
+    return result?.ProjectNext?.fields;
+  }
+  const projectFieldUpdate = async (projectId: string, itemId: string, fieldId: string, value: any): Promise<any> => {
+    const result: any = await octokit.graphql({
+      query: `mutation {
+        updateProjectNextItemField(
+          input: {projectId: "${projectId}", itemId: "${itemId}", fieldId: "${fieldId}", value: ${JSON.stringify(value)}}
+        ) {
+          projectNextItem {
+            id
+          }
+        }
+      }`,
+      headers
+    })
+    return result?.updateProjectNextItemField?.projectNextItem?.id;
+  }
+  
   if (!token) return core.setFailed('No input \'token\'')
   if (!projectNumber) return core.setFailed('No input \'projectNumber\'')
   if (!issue && !pr) return core.setFailed('No issue or pr in event context')
@@ -26,30 +104,7 @@ const run = async (): Promise<void> => {
   const octokit: ClientType = github.getOctokit(token)
 
   core.startGroup(`Get project number \u001b[1m${projectNumber}\u001B[m`)
-  let projectQuery
-  if (user) {
-    projectQuery = `{
-      user(login: "${user}") {
-        projectNext(number: ${projectNumber}) {
-          title,
-          id
-        }
-      }
-    }`
-  } else if (organization) {
-    projectQuery = `{
-      organization(login: "${organization}") {
-        projectNext(number: ${projectNumber}) {
-          title,
-          id
-        }
-      }
-    }`
-  } else {
-    core.setFailed('No input \'organization\' or \'user\'')
-  }
-  const headers = { 'GraphQL-Features': 'projects_next_graphql', }
-  const projectNextResponse: any = await octokit.graphql(projectQuery)
+  const projectNextResponse = await projectGet(projectNumber, organization, user);
   core.info(JSON.stringify(projectNextResponse, null, 2))
   core.endGroup()
 
@@ -63,25 +118,20 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
   }
 
   core.startGroup(`Add ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m`)
-  const result: any = await octokit.graphql({
-    query: `mutation {
-      addProjectNextItem(
-        input: { contentId: "${node_id}", projectId: "${projectNext.id}" }
-      ) {
-        projectNextItem {
-          id
-        }
-      }
-    }`,
-    headers
-  })
-  core.info(JSON.stringify(result, null, 2))
+  const itemId = await projectAdd(projectNext.id, node_id);
+  core.info(JSON.stringify(itemId, null, 2))
   core.endGroup()
 
-  if (!result?.addProjectNextItem?.projectNextItem?.id) {
+  if (itemId) {
     core.setFailed(`Failed to add ${type} to project '${projectNext.title}'.`)
     return
   }
+
+  const fields = await projectFieldsGet(projectNext.id);
+
+  const fieldsToMutate = fields.filter(())
+
+  // const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value);
 
   const link = `https://github.com/${user ? 'users/' + user : 'orgs/' + organization}/projects/${projectNumber}`
   core.info(`✅ Successfully added ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m.
