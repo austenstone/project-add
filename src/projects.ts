@@ -7,6 +7,9 @@ type ClientType = ReturnType<typeof github.getOctokit>
 interface Input {
   token: string;
   projectNumber: number;
+  node_id: string;
+  type: string;
+  title: string;
   issue?: WebhookPayload['issue'];
   pr?: WebhookPayload["pull_request"];
   login: string;
@@ -32,11 +35,19 @@ export function getInputs(): Input {
   
   if (github.context.payload.issue) {
     ret.issue = github.context.payload.issue
+    ret.node_id = ret.issue.node_id
+    ret.type = 'issue'
+    ret.title = ret.issue.title
   } else if (github.context.payload.pull_request) {
     ret.pr = github.context.payload.pull_request
+    ret.node_id = ret.pr.node_id
+    ret.type = 'pull request'
+    ret.title = ret.pr.title
   } else {
     throw `Missing payload 'pull_request' or 'issue'`
   }
+
+
 
   const fields = core.getInput('fields')
   const fieldsValue = core.getInput('fields-value')
@@ -82,13 +93,13 @@ const run = async (): Promise<void> => {
       core.setFailed('No input \'organization\' or \'user\'')
     }
     const projectNextResponse: any = await octokit.graphql(projectQuery)
-    return projectNextResponse;
+    return projectNextResponse?.organization?.projectNext || projectNextResponse?.user?.projectNext
   }
   const projectAdd = async (projectId: string, contentId: string): Promise<string> => {
     const result: any = await octokit.graphql({
       query: `mutation {
         addProjectNextItem(
-          input: { contentId: "${contentId}", projectId: "${projectId}" }
+          input: { projectId: "${projectId}", contentId: "${contentId}" }
         ) {
           projectNextItem {
             id
@@ -134,29 +145,23 @@ const run = async (): Promise<void> => {
     return result?.updateProjectNextItemField?.projectNextItem?.id;
   }
   const {
-    issue,
-    pr,
-    projectNumber,
     token,
+    projectNumber,
+    node_id,
+    type,
+    title,
     login,
     organization,
     user,
-    fields
+    fields,
   } = inputs;
-
-  const node_id = issue?.node_id || pr?.node_id
-  if (!node_id) return core.setFailed('Can\'t find \'node_id\' in event context')
-  const type = issue ? 'issue' : 'pull request';
-  const title = issue ? issue.title : pr?.title;
 
   const octokit: ClientType = github.getOctokit(token)
 
   core.startGroup(`Get project number \u001b[1m${projectNumber}\u001B[m`)
-  const projectNextResponse = await projectGet(projectNumber, organization, user)
-  core.info(JSON.stringify(projectNextResponse, null, 2))
+  const projectNext = await projectGet(projectNumber, organization, user)
+  core.info(JSON.stringify(projectNext, null, 2))
   core.endGroup()
-
-  const projectNext = projectNextResponse?.organization?.projectNext || projectNextResponse?.user?.projectNext
 
   if (!projectNext?.id) {
     core.setFailed(`Project number \u001b[1m${projectNumber}\u001B[m not found for login \u001b[1m${login}\u001B[m.

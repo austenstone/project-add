@@ -72,9 +72,15 @@ function getInputs() {
     }
     if (github.context.payload.issue) {
         ret.issue = github.context.payload.issue;
+        ret.node_id = ret.issue.node_id;
+        ret.type = 'issue';
+        ret.title = ret.issue.title;
     }
     else if (github.context.payload.pull_request) {
         ret.pr = github.context.payload.pull_request;
+        ret.node_id = ret.pr.node_id;
+        ret.type = 'pull request';
+        ret.title = ret.pr.title;
     }
     else {
         throw `Missing payload 'pull_request' or 'issue'`;
@@ -94,7 +100,6 @@ function getInputs() {
 }
 exports.getInputs = getInputs;
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
     if (!github.context)
         return core.setFailed('No GitHub context.');
     if (!github.context.payload)
@@ -102,6 +107,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
     const inputs = getInputs();
     const headers = { 'GraphQL-Features': 'projects_next_graphql', };
     const projectGet = (projectNumber, organization, user) => __awaiter(void 0, void 0, void 0, function* () {
+        var _a, _b;
         let projectQuery;
         if (user) {
             projectQuery = `{
@@ -127,14 +133,14 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
             core.setFailed('No input \'organization\' or \'user\'');
         }
         const projectNextResponse = yield octokit.graphql(projectQuery);
-        return projectNextResponse;
+        return ((_a = projectNextResponse === null || projectNextResponse === void 0 ? void 0 : projectNextResponse.organization) === null || _a === void 0 ? void 0 : _a.projectNext) || ((_b = projectNextResponse === null || projectNextResponse === void 0 ? void 0 : projectNextResponse.user) === null || _b === void 0 ? void 0 : _b.projectNext);
     });
     const projectAdd = (projectId, contentId) => __awaiter(void 0, void 0, void 0, function* () {
         var _c, _d;
         const result = yield octokit.graphql({
             query: `mutation {
         addProjectNextItem(
-          input: { contentId: "${contentId}", projectId: "${projectId}" }
+          input: { projectId: "${projectId}", contentId: "${contentId}" }
         ) {
           projectNextItem {
             id
@@ -181,18 +187,12 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         });
         return (_g = (_f = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _f === void 0 ? void 0 : _f.projectNextItem) === null || _g === void 0 ? void 0 : _g.id;
     });
-    const { issue, pr, projectNumber, token, login, organization, user, fields } = inputs;
-    const node_id = (issue === null || issue === void 0 ? void 0 : issue.node_id) || (pr === null || pr === void 0 ? void 0 : pr.node_id);
-    if (!node_id)
-        return core.setFailed('Can\'t find \'node_id\' in event context');
-    const type = issue ? 'issue' : 'pull request';
-    const title = issue ? issue.title : pr === null || pr === void 0 ? void 0 : pr.title;
+    const { token, projectNumber, node_id, type, title, login, organization, user, fields, } = inputs;
     const octokit = github.getOctokit(token);
     core.startGroup(`Get project number \u001b[1m${projectNumber}\u001B[m`);
-    const projectNextResponse = yield projectGet(projectNumber, organization, user);
-    core.info(JSON.stringify(projectNextResponse, null, 2));
+    const projectNext = yield projectGet(projectNumber, organization, user);
+    core.info(JSON.stringify(projectNext, null, 2));
     core.endGroup();
-    const projectNext = ((_a = projectNextResponse === null || projectNextResponse === void 0 ? void 0 : projectNextResponse.organization) === null || _a === void 0 ? void 0 : _a.projectNext) || ((_b = projectNextResponse === null || projectNextResponse === void 0 ? void 0 : projectNextResponse.user) === null || _b === void 0 ? void 0 : _b.projectNext);
     if (!(projectNext === null || projectNext === void 0 ? void 0 : projectNext.id)) {
         core.setFailed(`Project number \u001b[1m${projectNumber}\u001B[m not found for login \u001b[1m${login}\u001B[m.
 Check the number of the project and that it is owned by \u001b[1m${login}\u001B[m.
