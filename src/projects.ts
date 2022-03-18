@@ -55,7 +55,7 @@ export function getInputs(): Input {
 const run = async (): Promise<void> => {
   if (!github.context) return core.setFailed('No GitHub context.')
   if (!github.context.payload) return core.setFailed('No event. Make sure this is an issue or pr event.')
-  const inputs = getInputs();
+  const inputs = getInputs()
   const headers = { 'GraphQL-Features': 'projects_next_graphql', }
   const projectGet = async (projectNumber: number, organization?: string, user?: string): Promise<any> => {
     let projectQuery
@@ -151,7 +151,7 @@ const run = async (): Promise<void> => {
   const octokit: ClientType = github.getOctokit(token)
 
   core.startGroup(`Get project number \u001b[1m${projectNumber}\u001B[m`)
-  const projectNextResponse = await projectGet(projectNumber, organization, user);
+  const projectNextResponse = await projectGet(projectNumber, organization, user)
   core.info(JSON.stringify(projectNextResponse, null, 2))
   core.endGroup()
 
@@ -165,7 +165,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
   }
 
   core.startGroup(`Add ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m`)
-  const itemId = await projectAdd(projectNext.id, node_id);
+  const itemId = await projectAdd(projectNext.id, node_id)
   core.info(JSON.stringify(itemId, null, 2))
   core.endGroup()
 
@@ -175,14 +175,14 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
   }
 
   if (fields) {
-    const projectFields = await projectFieldsGet(projectNext.id);
-    console.log('fields', fields);
-    console.log('projectFields', projectFields);
+    const projectFields = await projectFieldsGet(projectNext.id)
+    console.log('fields', fields)
+    console.log('projectFields', projectFields)
     Object.entries(fields).forEach(([key, value]) => {
       const fieldId = projectFields[key];
-      const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value);
-      core.info(JSON.stringify(updatedFieldId, null, 2));
-    });
+      const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value)
+      core.info(JSON.stringify(updatedFieldId, null, 2))
+    })
   }
 
   const link = `https://github.com/${user ? 'users/' + user : 'orgs/' + organization}/projects/${projectNumber}`
