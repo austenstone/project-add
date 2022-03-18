@@ -7,7 +7,7 @@ type ClientType = ReturnType<typeof github.getOctokit>
 interface Input {
   token: string;
   projectNumber: number;
-  issue?: WebhookPayload["issue"]?;
+  issue?: WebhookPayload['issue'];
   pr?: WebhookPayload["pull_request"];
   login: string;
   organization?: string;
@@ -178,8 +178,11 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
     const projectFields = await projectFieldsGet(projectNext.id);
     console.log('fields', fields);
     console.log('projectFields', projectFields);
-    // const fieldsToMutate = fields.filter()
-    // const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value);
+    Object.entries(fields).forEach(([key, value]) => {
+      const fieldId = projectFields[key];
+      const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value);
+      core.info(JSON.stringify(updatedFieldId, null, 2));
+    });
   }
 
   const link = `https://github.com/${user ? 'users/' + user : 'orgs/' + organization}/projects/${projectNumber}`
