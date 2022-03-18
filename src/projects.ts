@@ -137,7 +137,7 @@ const run = async (): Promise<void> => {
       headers
     })
     console.log('result', result);
-    return result?.ProjectNext?.fields;
+    return result?.node?.fields?.nodes;
   }
   const projectFieldUpdate = async (projectId: string, itemId: string, fieldId: string, value: any): Promise<any> => {
     const result: any = await octokit.graphql({

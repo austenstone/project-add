@@ -153,7 +153,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         return (_d = (_c = result === null || result === void 0 ? void 0 : result.addProjectNextItem) === null || _c === void 0 ? void 0 : _c.projectNextItem) === null || _d === void 0 ? void 0 : _d.id;
     });
     const projectFieldsGet = (projectId) => __awaiter(void 0, void 0, void 0, function* () {
-        var _e;
+        var _e, _f;
         const result = yield octokit.graphql({
             query: `{
         node(id: "${projectId}") {
@@ -171,10 +171,10 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
             headers
         });
         console.log('result', result);
-        return (_e = result === null || result === void 0 ? void 0 : result.ProjectNext) === null || _e === void 0 ? void 0 : _e.fields;
+        return (_f = (_e = result === null || result === void 0 ? void 0 : result.node) === null || _e === void 0 ? void 0 : _e.fields) === null || _f === void 0 ? void 0 : _f.nodes;
     });
     const projectFieldUpdate = (projectId, itemId, fieldId, value) => __awaiter(void 0, void 0, void 0, function* () {
-        var _f, _g;
+        var _g, _h;
         const result = yield octokit.graphql({
             query: `mutation {
         updateProjectNextItemField(
@@ -187,7 +187,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
       }`,
             headers
         });
-        return (_g = (_f = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _f === void 0 ? void 0 : _f.projectNextItem) === null || _g === void 0 ? void 0 : _g.id;
+        return (_h = (_g = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _g === void 0 ? void 0 : _g.projectNextItem) === null || _h === void 0 ? void 0 : _h.id;
     });
     const octokit = github.getOctokit(token);
     core.startGroup(`Get project number \u001b[1m${projectNumber}\u001B[m`);
