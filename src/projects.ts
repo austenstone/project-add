@@ -16,24 +16,24 @@ interface Input {
 }
 
 export function getInputs(): Input {
-  const result = {} as Input
-  result.token = core.getInput('github-token')
-  result.projectNumber = parseInt(core.getInput('project-number'))
-  if (isNaN(result.projectNumber)) throw `No input 'projectNumber'`
-  result.organization = core.getInput('organization') || github.context.repo.owner
-  result.user = core.getInput('user')
-  console.log(result);
-  if (result.organization) {
-    result.login = result.organization
-  } else if (result.user) {
-    result.login = result.user
+  const ret = {} as Input
+  ret.token = core.getInput('github-token')
+  ret.projectNumber = parseInt(core.getInput('project-number'))
+  if (isNaN(ret.projectNumber)) throw `No input 'projectNumber'`
+  ret.organization = core.getInput('organization') || github.context.repo.owner
+  ret.user = core.getInput('user')
+  if (ret.organization) {
+    ret.login = ret.organization
+  } else if (ret.user) {
+    ret.login = ret.user
   } else {
-    throw `Missing payload 'organization' or 'user'`
+    throw `Missing input 'organization' or 'user'`
   }
+  console.log(github.context.payload);
   if (github.context.payload.issue) {
-    result.issue = github.context.payload.issue
+    ret.issue = github.context.payload.issue
   } if (github.context.payload.pull_request) {
-    result.pr = github.context.payload.pull_request
+    ret.pr = github.context.payload.pull_request
   } else {
     throw `Missing payload 'pull_request' or 'issue'`
   }
@@ -42,7 +42,7 @@ export function getInputs(): Input {
   const fieldsValue = core.getInput('fields-value')
   const fieldsValueArr = fieldsValue.split(',')
   if (fields) {
-    result.fields = fields.split(',').reduce((obj, f, i) => {
+    ret.fields = fields.split(',').reduce((obj, f, i) => {
       if (fieldsValueArr[i]) {
         obj[f] = fieldsValueArr[i]
       }
@@ -50,7 +50,7 @@ export function getInputs(): Input {
     }, {})
   }
 
-  return result;
+  return ret;
 }
 
 const run = async (): Promise<void> => {

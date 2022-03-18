@@ -54,28 +54,28 @@ exports.getInputs = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 function getInputs() {
-    const result = {};
-    result.token = core.getInput('github-token');
-    result.projectNumber = parseInt(core.getInput('project-number'));
-    if (isNaN(result.projectNumber))
+    const ret = {};
+    ret.token = core.getInput('github-token');
+    ret.projectNumber = parseInt(core.getInput('project-number'));
+    if (isNaN(ret.projectNumber))
         throw `No input 'projectNumber'`;
-    result.organization = core.getInput('organization') || github.context.repo.owner;
-    result.user = core.getInput('user');
-    console.log(result);
-    if (result.organization) {
-        result.login = result.organization;
+    ret.organization = core.getInput('organization') || github.context.repo.owner;
+    ret.user = core.getInput('user');
+    if (ret.organization) {
+        ret.login = ret.organization;
     }
-    else if (result.user) {
-        result.login = result.user;
+    else if (ret.user) {
+        ret.login = ret.user;
     }
     else {
-        throw `Missing payload 'organization' or 'user'`;
+        throw `Missing input 'organization' or 'user'`;
     }
+    console.log(github.context.payload);
     if (github.context.payload.issue) {
-        result.issue = github.context.payload.issue;
+        ret.issue = github.context.payload.issue;
     }
     if (github.context.payload.pull_request) {
-        result.pr = github.context.payload.pull_request;
+        ret.pr = github.context.payload.pull_request;
     }
     else {
         throw `Missing payload 'pull_request' or 'issue'`;
@@ -84,14 +84,14 @@ function getInputs() {
     const fieldsValue = core.getInput('fields-value');
     const fieldsValueArr = fieldsValue.split(',');
     if (fields) {
-        result.fields = fields.split(',').reduce((obj, f, i) => {
+        ret.fields = fields.split(',').reduce((obj, f, i) => {
             if (fieldsValueArr[i]) {
                 obj[f] = fieldsValueArr[i];
             }
             return obj;
         }, {});
     }
-    return result;
+    return ret;
 }
 exports.getInputs = getInputs;
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
