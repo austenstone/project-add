@@ -70,13 +70,10 @@ function getInputs() {
     else {
         throw `Missing input 'organization' or 'user'`;
     }
-    console.log(ret);
-    console.log(github.context.payload);
-    console.log(github.context.payload.issue);
     if (github.context.payload.issue) {
         ret.issue = github.context.payload.issue;
     }
-    if (github.context.payload.pull_request) {
+    else if (github.context.payload.pull_request) {
         ret.pr = github.context.payload.pull_request;
     }
     else {
