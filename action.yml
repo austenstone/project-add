@@ -1,14 +1,18 @@
 name: "Project Add"
 description: "Add an issue or pull request to a project (beta)"
 author: "Austen Stone"
+branding:
+  icon: "plus"
+  color: "blue"
+
 inputs:
   project-number:
     description: "The number of the project. Get this from the URL."
     required: true
   github-token:
     description: "The GITHUB_TOKEN secret"
-    required: false
     default: ${{ github.token }}
+    required: false
   organization:
     description: "The organization that owns the project."
     required: false
@@ -19,7 +23,3 @@ inputs:
 runs:
   using: "node16"
   main: "dist/index.js"
-
-branding:
-  icon: "plus"
-  color: "blue"
