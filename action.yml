@@ -19,6 +19,16 @@ inputs:
   user:
     description: "The user that owns the project."
     required: false
+  fields:
+    description: "The fields to modify."
+    required: false
+  fields-value:
+    description: "The fields values."
+    required: false
+
+outputs:
+  id:
+    description: "The id of the project item."
 
 runs:
   using: "node16"

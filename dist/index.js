@@ -85,6 +85,17 @@ function getInputs() {
     else {
         throw `Missing payload 'pull_request' or 'issue'`;
     }
+    const fields = core.getInput('fields');
+    const fieldsValue = core.getInput('fields-value');
+    const fieldsValueArr = fieldsValue.split(',');
+    if (fields) {
+        ret.fields = fields.split(',').reduce((obj, f, i) => {
+            if (fieldsValueArr[i]) {
+                obj[f] = fieldsValueArr[i];
+            }
+            return obj;
+        }, {});
+    }
     return ret;
 }
 exports.getInputs = getInputs;
@@ -93,7 +104,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         return core.setFailed('No GitHub context.');
     if (!github.context.payload)
         return core.setFailed('No event. Make sure this is an issue or pr event.');
-    const { token, projectNumber, node_id, type, title, login, organization, user, } = getInputs();
+    const { token, projectNumber, node_id, type, title, login, organization, user, fields, } = getInputs();
     const headers = { 'GraphQL-Features': 'projects_next_graphql', };
     const projectGet = (projectNumber, organization, user) => __awaiter(void 0, void 0, void 0, function* () {
         var _a, _b;
@@ -140,6 +151,42 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         });
         return (_d = (_c = result === null || result === void 0 ? void 0 : result.addProjectNextItem) === null || _c === void 0 ? void 0 : _c.projectNextItem) === null || _d === void 0 ? void 0 : _d.id;
     });
+    const projectFieldsGet = (projectId) => __awaiter(void 0, void 0, void 0, function* () {
+        var _e, _f;
+        const result = yield octokit.graphql({
+            query: `{
+        node(id: "${projectId}") {
+          ... on ProjectNext {
+            fields(first: 20) {
+              nodes {
+                id
+                name
+                settings
+              }
+            }
+          }
+        }
+      }`,
+            headers
+        });
+        return (_f = (_e = result === null || result === void 0 ? void 0 : result.node) === null || _e === void 0 ? void 0 : _e.fields) === null || _f === void 0 ? void 0 : _f.nodes;
+    });
+    const projectFieldUpdate = (projectId, itemId, fieldId, value) => __awaiter(void 0, void 0, void 0, function* () {
+        var _g, _h;
+        const result = yield octokit.graphql({
+            query: `mutation {
+        updateProjectNextItemField(
+          input: {projectId: "${projectId}", itemId: "${itemId}", fieldId: "${fieldId}", value: ${JSON.stringify(value)}}
+        ) {
+          projectNextItem {
+            id
+          }
+        }
+      }`,
+            headers
+        });
+        return (_h = (_g = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _g === void 0 ? void 0 : _g.projectNextItem) === null || _h === void 0 ? void 0 : _h.id;
+    });
     const octokit = github.getOctokit(token);
     core.startGroup(`Get project number \u001b[1m${projectNumber}\u001B[m`);
     const projectNext = yield projectGet(projectNumber, organization, user);
@@ -154,8 +201,16 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
     core.startGroup(`Add ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m`);
     const itemId = yield projectAdd(projectNext.id, node_id);
     core.info(JSON.stringify(itemId, null, 2));
-    core.endGroup();
     core.setOutput('id', itemId);
+    core.endGroup();
+    if (fields) {
+        const projectFields = yield projectFieldsGet(projectNext.id);
+        Object.entries(fields).forEach(([name, value]) => {
+            const fieldId = projectFields.find((field) => name === field.name).id;
+            const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value);
+            core.info(JSON.stringify(updatedFieldId, null, 2));
+        });
+    }
     const link = `https://github.com/${user ? 'users/' + user : 'orgs/' + organization}/projects/${projectNumber}`;
     core.info(`✅ Successfully added ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m.
 ${link}`);

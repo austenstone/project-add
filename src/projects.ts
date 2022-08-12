@@ -15,6 +15,7 @@ interface Input {
   login: string
   organization?: string
   user?: string
+  fields: { [key: string]: string }
 }
 
 export function getInputs(): Input {
@@ -46,6 +47,18 @@ export function getInputs(): Input {
     throw `Missing payload 'pull_request' or 'issue'`
   }
 
+  const fields = core.getInput('fields')
+  const fieldsValue = core.getInput('fields-value')
+  const fieldsValueArr = fieldsValue.split(',')
+  if (fields) {
+    ret.fields = fields.split(',').reduce((obj, f, i) => {
+      if (fieldsValueArr[i]) {
+        obj[f] = fieldsValueArr[i]
+      }
+      return obj
+    }, {})
+  }
+
   return ret
 }
 
@@ -61,6 +74,7 @@ const run = async (): Promise<void> => {
     login,
     organization,
     user,
+    fields,
   } = getInputs()
   const headers = { 'GraphQL-Features': 'projects_next_graphql', }
   const projectGet = async (projectNumber: number, organization?: string, user?: string): Promise<any> => {
@@ -104,6 +118,40 @@ const run = async (): Promise<void> => {
     })
     return result?.addProjectNextItem?.projectNextItem?.id
   }
+  const projectFieldsGet = async (projectId: string): Promise<any> => {
+    const result: any = await octokit.graphql({
+      query: `{
+        node(id: "${projectId}") {
+          ... on ProjectNext {
+            fields(first: 20) {
+              nodes {
+                id
+                name
+                settings
+              }
+            }
+          }
+        }
+      }`,
+      headers
+    })
+    return result?.node?.fields?.nodes
+  }
+  const projectFieldUpdate = async (projectId: string, itemId: string, fieldId: string, value: any): Promise<any> => {
+    const result: any = await octokit.graphql({
+      query: `mutation {
+        updateProjectNextItemField(
+          input: {projectId: "${projectId}", itemId: "${itemId}", fieldId: "${fieldId}", value: ${JSON.stringify(value)}}
+        ) {
+          projectNextItem {
+            id
+          }
+        }
+      }`,
+      headers
+    })
+    return result?.updateProjectNextItemField?.projectNextItem?.id
+  }
 
   const octokit: ClientType = github.getOctokit(token)
 
@@ -122,9 +170,18 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
   core.startGroup(`Add ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m`)
   const itemId = await projectAdd(projectNext.id, node_id)
   core.info(JSON.stringify(itemId, null, 2))
+  core.setOutput('id', itemId);
   core.endGroup()
 
-  core.setOutput('id', itemId);
+  if (fields) {
+    const projectFields = await projectFieldsGet(projectNext.id)
+    Object.entries(fields).forEach(([name, value]) => {
+      const fieldId = projectFields.find((field) => name === field.name).id
+      const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value)
+      core.info(JSON.stringify(updatedFieldId, null, 2))
+    })
+  }
+
   const link = `https://github.com/${user ? 'users/' + user : 'orgs/' + organization}/projects/${projectNumber}`
   core.info(`✅ Successfully added ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m.
 ${link}`)
