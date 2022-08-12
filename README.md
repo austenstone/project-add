@@ -1,3 +1,13 @@
+
+> **Note**
+> Use the official action [Add To GitHub projects](https://github.com/marketplace/actions/add-to-github-projects).
+
+---
+
+> **Warning**
+> We deprecated the ProjectNext GraphQL API on 2022-06-20, and **we will remove the ProjectNext GraphQL API on 2022-10-01**. For more information on migrating to the new ProjectV2 GraphQL API, please see "The new GitHub Issues – June 23rd update" in the GitHub Blog. See [Using the API to manage Projects
+](https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/using-the-api-to-manage-projects).
+
 # Add Issue/PR to Project (BETA) ➕
 
 This GitHub [action](https://docs.github.com/en/actions) adds issues or pull requests to a [Project (beta)](https://github.com/features/issues).
