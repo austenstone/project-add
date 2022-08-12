@@ -28,7 +28,7 @@ inputs:
 
 outputs:
   id:
-  description: "The id of the project item."
+    description: "The id of the project item."
 
 runs:
   using: "node16"
